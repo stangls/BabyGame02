@@ -27,6 +27,7 @@ class RectangleZoomer(surface: Surface) : DrawEngine(surface), View.OnTouchListe
     )
     val rand = Random()
     val sin_45 = 0.5f*Math.sqrt(2.0)
+    val plusFactor = 0.5f-0.5f*sin_45
 
     override fun initState() {
         backgroundPaint.color=Color.BLACK
@@ -35,14 +36,14 @@ class RectangleZoomer(surface: Surface) : DrawEngine(surface), View.OnTouchListe
     }
 
     override fun computeState(rect: Rect) {
+        val expandSize = expansionPercentS*Math.max(rect.width(),rect.height())/1000*timeDelta().toInt()
         synchronized(rectangles){
             if (!rectangles.isEmpty()){
                 for(r in rectangles){
-                    r.expandBy(expansionPercentS)
+                    r.expandBy(expandSize)
                 }
                 val first = rectangles.first
-                if (first.exceeds(rect,(sin_45*first.getWidth()).toInt())){
-                    d("removing")
+                if (first.exceeds(rect,(plusFactor*first.getWidth()).toInt())){
                     rectangles.remove(first)
                     pool.free(first)
                     backgroundPaint.color=first.color
@@ -56,9 +57,8 @@ class RectangleZoomer(surface: Surface) : DrawEngine(surface), View.OnTouchListe
         synchronized(rectangles){
             for(rect in rectangles){
                 val paint = Paint()
-                paint.strokeWidth=1f
                 paint.color=rect.color
-                val rad=Math.min(rect.getWidth(),rect.getHeight()).toFloat()/2
+                val rad=Math.min(rect.getWidth(),rect.getHeight()).toFloat()/4
                 canvas.drawRoundRect(rect.asRectF(),rad,rad,paint)
             }
         }

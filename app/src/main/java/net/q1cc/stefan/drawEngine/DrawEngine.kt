@@ -20,6 +20,9 @@ abstract class DrawEngine(surface : Surface) {
     abstract fun computeState(rect: Rect)
     abstract fun drawState(canvas: Canvas)
 
+    protected var prevStartTime = System.currentTimeMillis()
+        private set
+
     fun start() {
         // main rendering loop
         running=true
@@ -38,6 +41,7 @@ abstract class DrawEngine(surface : Surface) {
                     holder.unlockCanvasAndPost(canvas)
                 }
                 waitTime = Math.max(frameTime - System.currentTimeMillis() + startTime, 5)
+                prevStartTime=startTime
             }
         }
     }
@@ -47,5 +51,10 @@ abstract class DrawEngine(surface : Surface) {
     }
 
     fun isRunning() = running
+
+    /**
+     * time since previous computation step started
+     */
+    fun timeDelta() = System.currentTimeMillis()-prevStartTime
 
 }

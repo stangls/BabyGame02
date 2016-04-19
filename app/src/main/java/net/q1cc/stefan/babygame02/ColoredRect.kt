@@ -13,8 +13,7 @@ data class ColoredRect(var x1:Int, var y1:Int, var x2:Int, var y2:Int, var color
 
     constructor() : this(0,0,0,0, Color.WHITE)
 
-    init{
-        d(this.toString())
+    fun checkBounds(){
         // TODO: move this to onchange-event-function
         if (x1>x2){
             val x=x1
