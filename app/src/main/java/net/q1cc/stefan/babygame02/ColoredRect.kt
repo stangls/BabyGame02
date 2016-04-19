@@ -2,18 +2,20 @@ package net.q1cc.stefan.babygame02
 
 import android.graphics.Color
 import android.graphics.Rect
+import android.graphics.RectF
 import com.pawegio.kandroid.d
 import net.q1cc.stefan.drawEngine.Pool
 
 /**
  * Created by stefan on 19.04.16.
  */
-data class Rectangle(var x1:Int,var y1:Int,var x2:Int,var y2:Int,var color:Int) {
+data class ColoredRect(var x1:Int, var y1:Int, var x2:Int, var y2:Int, var color:Int) {
 
     constructor() : this(0,0,0,0, Color.WHITE)
 
     init{
         d(this.toString())
+        // TODO: move this to onchange-event-function
         if (x1>x2){
             val x=x1
             x1=x2
@@ -34,11 +36,11 @@ data class Rectangle(var x1:Int,var y1:Int,var x2:Int,var y2:Int,var color:Int) 
         y2=y+height/2
     }
 
-    companion object factory : Pool.Factory<Rectangle> {
-        override fun createObject(): Rectangle {
-            return Rectangle()
+    companion object factory : Pool.Factory<ColoredRect> {
+        override fun createObject(): ColoredRect {
+            return ColoredRect()
         }
-        fun centered(x:Int,y:Int,width:Int,height:Int) { val r=Rectangle(); r.center(x,y,width,height) }
+        fun centered(x:Int,y:Int,width:Int,height:Int) { val r= ColoredRect(); r.center(x,y,width,height) }
         fun centered(x:Int,y:Int,width:Int) = centered(x,y,width,width)
     }
 
@@ -50,8 +52,13 @@ data class Rectangle(var x1:Int,var y1:Int,var x2:Int,var y2:Int,var color:Int) 
         y2+= s2
     }
 
-    fun exceeds(rect: Rect): Boolean = rect.left<=x1 && rect.right>=x2 && rect.top<=y1 && rect.bottom>=y2
+    fun exceeds(rect: Rect): Boolean = rect.left>=x1 && rect.right<=x2 && rect.top>=y1 && rect.bottom<=y2
+    fun exceeds(rect: Rect, plus:Int): Boolean = rect.left-plus>=x1 && rect.right+plus<=x2 && rect.top-plus>=y1 && rect.bottom+plus<=y2
 
     fun asRect(): Rect = Rect(x1,y1,x2,y2)
+    fun asRectF(): RectF = RectF(x1.toFloat(), y1.toFloat(), x2.toFloat(), y2.toFloat())
+
+    fun getWidth() = (x2-x1)
+    fun getHeight() = (y2-y1)
 
 }

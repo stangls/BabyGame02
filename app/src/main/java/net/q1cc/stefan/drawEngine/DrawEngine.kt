@@ -1,6 +1,7 @@
 package net.q1cc.stefan.drawEngine;
 
 import android.graphics.Canvas
+import android.graphics.Rect
 import android.view.SurfaceHolder
 import com.pawegio.kandroid.runAsync
 
@@ -12,11 +13,11 @@ abstract class DrawEngine(surface : Surface) {
     protected val surface = surface
     protected val frameTime = 1000/30 // 30FPS
 
-
     private var running = false
+    private var drawingRect : Rect = Rect()
 
     abstract fun initState()
-    abstract fun computeState()
+    abstract fun computeState(rect: Rect)
     abstract fun drawState(canvas: Canvas)
 
     fun start() {
@@ -28,7 +29,8 @@ abstract class DrawEngine(surface : Surface) {
             while (running) {
                 Thread.sleep(waitTime)
                 val startTime = System.currentTimeMillis();
-                computeState();
+                surface.getDrawingRect(drawingRect);
+                computeState(drawingRect);
                 val holder: SurfaceHolder = surface?.holder ?: continue;
                 val canvas: Canvas? = holder.lockCanvas()
                 if (canvas != null) {

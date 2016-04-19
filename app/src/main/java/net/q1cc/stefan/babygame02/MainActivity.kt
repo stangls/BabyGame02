@@ -19,9 +19,9 @@ class MainActivity : AppCompatActivity() {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main)
-        surf.setOnTouchListener(drawEngine)
         surf.fullScreen()
         drawEngine = RectangleZoomer(surf)
+        surf.setOnTouchListener(drawEngine)
     }
 
     override fun onResume() {
