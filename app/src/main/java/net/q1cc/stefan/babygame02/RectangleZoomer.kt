@@ -12,7 +12,7 @@ import net.q1cc.stefan.drawEngine.Pool
 import net.q1cc.stefan.drawEngine.Surface
 import java.util.*
 
-val expansionPercentS = 10
+val expansionFactorMS = 100f/100/1000 // 100% per second
 
 class RectangleZoomer(surface: Surface) : DrawEngine(surface), View.OnTouchListener {
 
@@ -26,7 +26,7 @@ class RectangleZoomer(surface: Surface) : DrawEngine(surface), View.OnTouchListe
         Color.BLACK
     )
     val rand = Random()
-    val sin_45 = 0.5f*Math.sqrt(2.0)
+    val sin_45 = 0.5f*Math.sqrt(2.0).toFloat()
     val plusFactor = 0.5f-0.5f*sin_45
 
     override fun initState() {
@@ -36,14 +36,14 @@ class RectangleZoomer(surface: Surface) : DrawEngine(surface), View.OnTouchListe
     }
 
     override fun computeState(rect: Rect) {
-        val expandSize = expansionPercentS*Math.max(rect.width(),rect.height())/1000*timeDelta().toInt()
         synchronized(rectangles){
             if (!rectangles.isEmpty()){
                 for(r in rectangles){
+                    val expandSize = Math.max(1f,expansionFactorMS*Math.max(r.getWidth(),r.getHeight())*timeDelta())
                     r.expandBy(expandSize)
                 }
                 val first = rectangles.first
-                if (first.exceeds(rect,(plusFactor*first.getWidth()).toInt())){
+                if (first.exceeds(rect,plusFactor*first.getWidth())){
                     rectangles.remove(first)
                     pool.free(first)
                     backgroundPaint.color=first.color
@@ -72,7 +72,7 @@ class RectangleZoomer(surface: Surface) : DrawEngine(surface), View.OnTouchListe
             // TODO: foreach pointer-index in motion-event
             // obtain fresh rectangle
             val rect = pool.newObject()
-            rect.center(event.x.toInt(),event.y.toInt(),1)
+            rect.center(event.x,event.y,50f)
             do{
                 val color=colors[rand.nextInt(colors.size)]
                 if (color!=backgroundPaint.color){
